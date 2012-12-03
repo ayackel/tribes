@@ -1,5 +1,8 @@
 package org.yackel.ga;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Solver {
 
 	private static final int POP_SIZE = 20;
@@ -23,15 +26,19 @@ public class Solver {
 		initialize();
 		evaluate();
 		
-		printPopulation();
+		printPopulation(population);
 		
 //		while(true) {
 //			time++;
-//			newPopulation = selectNewPop(population);
-//			alter(newPopulation);
+			selectNewPop();
+//			alter();
 //			population = newPopulation;
 //			evaluate(population);
 //		}		
+
+			System.out.println("\nGeneration 2\n");
+			printPopulation(newPopulation);
+
 	}
 
 	private void initialize() {
@@ -64,21 +71,41 @@ public class Solver {
 	private void selectNewPop() {
 		newPopulation = new Genotype[POP_SIZE];
 		for(int i=0; i<POP_SIZE; i++) {
-			
-			
-			newPopulation[i] = new Genotype();
-			newPopulation[i].gene = RandomGenerator.nextLong(BIT_LENGTH);
+			double random = Math.random();
+			double perChange = 0.0;
+			for(Genotype genotype : population) {
+				perChange += genotype.fitness/cummFitness;
+				if(random < perChange) {
+					newPopulation[i] = genotype;
+					break;
+				}
+			}			
 		}		
 	}
 
-	private void alter(long[] newPopulation2) {
+	private void alter() {
+		crossover();
+		mutation();
+	}
+
+	private void crossover() {
+		List<Integer> xoverIndexes = new ArrayList<Integer >();
+		for(int i=0; i<POP_SIZE; i++) {
+			double random = Math.random();
+			if(random > perXover) {
+				xoverIndexes.add(i);
+			}
+		}		
+	}
+
+	private void mutation() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private void printPopulation() {
+	private void printPopulation(Genotype[] population) {
 		for(Genotype genotype : population) {
-			System.out.println(Long.toBinaryString(genotype.gene) + " : " + convertGene(genotype.gene) + " : " + genotype.fitness);
+			System.out.println(genotype.id + " : " + Long.toBinaryString(genotype.gene) + " : " + convertGene(genotype.gene) + " : " + genotype.fitness);
 		}
 	}
 }
